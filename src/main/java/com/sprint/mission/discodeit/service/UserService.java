@@ -14,9 +14,9 @@ public interface UserService {
     // 전체 조회 기능
     List<User> readAllUser();
 
-    // 수정 기능(유저 id 및 유저정보 수정)
-    User updateUser(UUID id, User user);
+    // 수정 기능(유저 id 및 유저이름 수정)
+    User updateUser(UUID id, String name);
 
     // 삭제 기능(유저 id를 찾아서 유저 삭제)
-    User deleteUser(UUID id);
+    void deleteUser(UUID id);
 }

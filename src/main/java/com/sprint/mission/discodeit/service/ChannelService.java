@@ -14,9 +14,9 @@ public interface ChannelService {
     // 전체 조회 기능
     List<Channel> readAllChannel();
 
-    // 수정 기능(채널 id 및 채널정보 수정)
-    Channel updateChannel(UUID id, Channel channel);
+    // 수정 기능(채널 id 및 채널이름 수정)
+    Channel updateChannel(UUID id, String name);
 
     // 삭제 기능(채널 id를 찾아서 채널 삭제)
-    Channel deleteChannel(UUID id);
+    void deleteChannel(UUID id);
 }

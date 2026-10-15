@@ -22,46 +22,49 @@ public class JCFMessageService implements MessageService {
 
     @Override
     public Message readMessage(UUID id) {
-        for(Message msg : data){
-            if(msg.getId().equals(id)){
-                // 해당 메시지 id를 가져와 요청받은 id와 일치하면 msg 를 반환한다.
-                return msg;
+        for (Message message : data) {
+            if (message.getId().equals(id)) {
+                // 메시지의 ID가 요청받은 ID와 일치하면 해당 message를 반환한다.
+                return message;
             }
         }
-        return null; // 해당하는 메시지 id를 찾을 수 없으면 null 로 반환한다.
+        // 해당 ID와 일치하는 메시지를 찾지 못하면 예외를 발생시킨다.
+        throw new IllegalArgumentException("메시지를 찾을 수 없습니다");
     }
 
     @Override
     public List<Message> readAllMessage() {
-        // return List.of();
-        // data 에 저장된 채널을 담은 새 목록을 반환한다.
+        // data 에 저장된 메시지를 담은 새 목록을 반환한다.
         return new ArrayList<>(data);
     }
 
     @Override
-    public Message updateMessage(UUID id, Message message) {
-        for(Message targetMessage : data){
-            if(targetMessage.getId().equals(targetMessage)){
-                // 찾고자 하는 채널 id가 맞다면 index 에 대입.
-                int index = data.indexOf(targetMessage);
-                // 해당 인덱스의 채널 객체를 수정한 channel 객체로 교체한다.
-                data.set(index, message);
-                // 그리고 수정한 channel 객체를 반환한다.
-                return targetMessage;
-            }
+    public Message updateMessage(UUID id, String content) {
+        // 수정할 메시지를 찾는다.
+        Message targetMessage = readMessage(id);
+        // 기존 메시지 내용과 수정할 내용이 동일한지 확인한다.
+        if (targetMessage.getContent().equals(content)){
+            throw new IllegalArgumentException("기존 메시지 내용과 동일합니다.");
         }
-        return null; // 수정할 채널 id를 찾을 수 없으면 null 로 반환한다.
+
+        // 내용이 다를 때만 변경한다.
+        targetMessage.changeContent(content);
+        return targetMessage; // 내용을 변경한 메시지 객체를 반환한다.
     }
 
     @Override
-    public Message deleteMessage(UUID id) {
-        for(Message message : data){
-            if(message.getId().equals(id)){
-                // 찾은 channel 목록에서 제거한 후 반환한다.
-                data.remove(message);
-                return message;
+    // 메인 클래스에서 deleteMessage() 메서드가 호출되어 id를 받는다.
+    public void deleteMessage(UUID id) {
+        // data에 있는 메시지 목록을 조회하여 반복한다.
+        for (int i = 0; i < data.size(); i++) {
+            // i번째 메시지의 ID와 삭제하려는 메시지 ID가 같은지 확인한다.
+            if (data.get(i).getId().equals(id)) {
+
+                data.remove(i); // 해당 인덱스의 메시지를 삭제한다.
+                return; // 삭제가 완료되면 메서드를 종료한다.
             }
         }
-        return null;
+        // 삭제할 메시지를 찾지 못하면 예외 발생시킨다.
+        throw new IllegalArgumentException("삭제할 메시지를 찾을 수 없습니다.");
     }
 }

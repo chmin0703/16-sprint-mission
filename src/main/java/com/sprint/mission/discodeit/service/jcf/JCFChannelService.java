@@ -16,52 +16,67 @@ public class JCFChannelService implements ChannelService {
 
     @Override
     public Channel createChannel(Channel channel) {
-        data.add(channel); // 전달받을 채널을 목록에 추가한다.
+        for(Channel targetChannel : data){
+            // 생성할 채널명과 기존에 있는 채널명이 중복되는지 검사한다.
+            if(targetChannel.getName().equals(channel.getName())){
+                throw new IllegalArgumentException("중복된 채널 이름입니다");
+            }
+        }
+        data.add(channel); // 전달받은 채널을 목록에 추가한다.
         return channel; // 추가한 채널 객체를 반환한다.
     }
 
     @Override
     public Channel readChannel(UUID id) {
-        for(Channel ch : data){
-            if(ch.getId().equals(id)){
-                // 해당 채널 id를 가져와 요청받은 id와 일치하면 ch 를 반환한다.
-                return ch;
+        for(Channel channel : data){
+            if(channel.getId().equals(id)){
+                // 해당 채널 ID를 가져와 요청받은 ID와 일치하면 channel 을 반환한다.
+                return channel;
             }
         }
-        return null; // 해당하는 채널을 찾을 수 없으면 null 로 반환한다.
+        // 해당 채널을 찾지 못하면 예외 발생사칸다.
+        throw new IllegalArgumentException("채널을 찾을 수 없습니다");
     }
 
     @Override
     public List<Channel> readAllChannel() {
-        // return List.of();
-        // data 에 저장된 채널을 담은 새 목록을 반환한다.
+        // data 에 저장된 채널들을 담은 새 목록을 반환한다.
         return new ArrayList<>(data);
     }
 
     @Override
-    public Channel updateChannel(UUID id, Channel channel) {
-        for(Channel targetChannel : data){
-            if(targetChannel.getId().equals(targetChannel)){
-                // 찾고자 하는 채널 id가 맞다면 index 에 대입.
-                int index = data.indexOf(targetChannel);
-                // 해당 인덱스의 채널 객체를 수정한 channel 객체로 교체한다.
-                data.set(index, channel);
-                // 그리고 수정한 channel 객체를 반환한다.
-                return targetChannel;
+    public Channel updateChannel(UUID id, String name) {
+        // 수정할 채널을 찾는다.
+        Channel targetChannel = readChannel(id);
+        // 기존의 채널명과 변경할 채널 이름이 같은지 검사한다.
+        if(targetChannel.getName().equals(name)){
+            // 기존의 채널 이름과 동일하면 예외를 발생시킨다.
+            throw new IllegalArgumentException("기존 채널명과 동일합니다.");
+        }
+        // 다른 채널이 이미 사용 중인 채널 이름인지 검사한다.
+        for(Channel otherChannel : data){
+            if(otherChannel.getName().equals(name)){
+                throw new IllegalArgumentException("중복된 채널명입니다.");
             }
         }
-        return null; // 수정할 채널 id를 찾을 수 없으면 null 로 반환한다.
+        // 모든 검사가 끝나면 채널 이름을 변경한다.
+        targetChannel.changeName(name);
+        return targetChannel; // 이름을 변경한 채널 객체를 반환한다.
     }
 
     @Override
-    public Channel deleteChannel(UUID id) {
-        for(Channel channel : data){
-            if(channel.getId().equals(id)){
-                // 찾은 channel 목록에서 제거한 후 반환한다.
-                data.remove(channel);
-                return channel;
+    // 메인 클래스에서 deleteChannel() 메서드가 호출되어 id를 받는다.
+    public void deleteChannel(UUID id) {
+        // data에 있는 채널 목록을 조회하여 반복한다.
+        for(int i = 0; i < data.size(); i++){
+            // i번째 채널의 ID와 삭제하려는 채널 id가 일치하는지 확인한다.
+            if(data.get(i).getId().equals(id)){
+
+                data.remove(i); // 해당 인덱스의 채널을 삭제한다.
+                return; // 삭제가 완료되면 메서드를 종료한다.
             }
         }
-        return null;
+        // 해당 채널을 찾지 못하면 예외를 발생시킨다.
+        throw new IllegalArgumentException("삭제할 채널을 찾을 수 없습니다.");
     }
 }
