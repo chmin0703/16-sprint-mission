@@ -46,10 +46,8 @@ public class JCFMessageService implements MessageService {
         if (targetMessage.getContent().equals(content)){
             throw new IllegalArgumentException("기존 메시지 내용과 동일합니다.");
         }
-
-        // 내용이 다를 때만 변경한다.
-        targetMessage.changeContent(content);
-        return targetMessage; // 내용을 변경한 메시지 객체를 반환한다.
+        targetMessage.changeContent(content); // 내용이 다를 때만 변경한다.
+        return targetMessage;   // 내용을 변경한 메시지 객체를 반환한다.
     }
 
     @Override

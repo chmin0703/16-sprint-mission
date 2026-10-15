@@ -55,13 +55,12 @@ public class JCFChannelService implements ChannelService {
         }
         // 다른 채널이 이미 사용 중인 채널 이름인지 검사한다.
         for(Channel otherChannel : data){
-            if(otherChannel.getName().equals(name)){
+            if(otherChannel != targetChannel && otherChannel.getName().equals(name)){
                 throw new IllegalArgumentException("중복된 채널명입니다.");
             }
         }
-        // 모든 검사가 끝나면 채널 이름을 변경한다.
-        targetChannel.changeName(name);
-        return targetChannel; // 이름을 변경한 채널 객체를 반환한다.
+        targetChannel.changeName(name); // 모든 검사가 끝나면 채널 이름을 변경한다.
+        return targetChannel;   // 이름을 변경한 채널 객체를 반환한다.
     }
 
     @Override

@@ -55,13 +55,12 @@ public class JCFUserService implements UserService {
         }
         // 다른 유저가 이미 사용 중인 이름인지 검사한다.
         for(User otherUser : data){
-            if(otherUser.getName().equals(name)){
+            if(otherUser != targetUser && otherUser.getName().equals(name)){
                 throw new IllegalArgumentException("중복된 이름입니다.");
             }
         }
-        // 모든 검사가 끝나면 유저의 이름을 변경한다.
-        targetUser.changeName(name);
-        return targetUser; // 이름을 변경한 유저 객체를 반환한다.
+        targetUser.changeName(name); // 모든 검사가 끝나면 유저의 이름을 변경한다.
+        return targetUser;  // 이름을 변경한 유저 객체를 반환한다.
     }
 
     @Override
