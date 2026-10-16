@@ -19,4 +19,11 @@ public interface ChannelService {
 
     // 삭제 기능(채널 id를 찾아서 채널 삭제)
     void deleteChannel(UUID id);
+
+    // 서비스 간 의존성 주입 메서드(채널<->유저)
+    void joinChannel(UUID channelId, UUID userId);
+
+    void leaveChannel(UUID channelId, UUID userId);
+
+    boolean isMember(UUID channelId, UUID userId);
 }

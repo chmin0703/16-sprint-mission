@@ -13,6 +13,7 @@ import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaApplication {
     public static void main(String[] args) {
@@ -21,8 +22,11 @@ public class JavaApplication {
         printMessageInformation();  // 메시지 서비스 CRUD 테스트 실행
     }
 
-    /** 유저 CRUD 테스트를 위해 구현한 메서드입니다. */
+    /*
+     * 유저 CRUD 테스트를 위해 구현한 메서드입니다.
+     */
     private static void printUserInformation(){
+
         System.out.println("=====( 유저 CRUD 테스트 )=====" + "\n");
         /* 1. 유저 서비스 구현체를 생성한다. (상위 타입으로) */
         UserService userService = new JCFUserService();
@@ -31,32 +35,36 @@ public class JavaApplication {
         User user1 = new User("최명함");
         User user2 = new User("이강한");
         User user3 = new User("박코딩");
+        User user4 = new User("김자바");
         userService.createUser(user1); // "최명함" 유저 등록
         userService.createUser(user2); // "이강한" 유저 등록
         userService.createUser(user3); // "박코딩" 유저 등록
+        userService.createUser(user4); // "김자바" 유저 등록
 
         System.out.println("=== 유저 생성 결과 ===");
-        for (User user : userService.readAllUser()) {
-            System.out.println(user.getName() + "님이 생성되었습니다~");
-        }
+        userService.readAllUser().stream()
+                .forEach(user ->
+                        System.out.println(user.getName() + "님이 생성되었습니다."));
         System.out.println("=".repeat(19));
         System.out.println();
 
-        /* 3. 유저의 정보를 단건으로 조회한다. */
+        /* 3. 각각의 유저 정보를 단건으로 조회한다. */
         System.out.println("==== 단건 조회 ====");
-        System.out.print(userService.readUser(user1.getId())); // 최명함 정보 조회
-        System.out.print(userService.readUser(user2.getId())); // 이강한 정보 조회
-        System.out.print(userService.readUser(user3.getId())); // 박코딩 정보 조회
+        System.out.print(userService.readUser(user1.getId()));
+        System.out.print(userService.readUser(user2.getId()));
+        System.out.print(userService.readUser(user3.getId()));
+        System.out.print(userService.readUser(user4.getId()));
         System.out.println("=".repeat(17));
         System.out.println();
 
-        /* 4. 유저 이름을 수정 (수정 전과 수정 후) */
+        /* 4. 유저 이름을 수정한다. (수정 전과 수정 후) */
         // 수정 전 유저 이름 목록
-        List<String> beforeNames = new ArrayList<>();
+        List<String> beforeNames = userService.readAllUser()
+                .stream()
+                .map(User::getName)
+                .collect(Collectors.toList());
+
         System.out.println("=== 수정 전 유저 이름 리스트 ===");
-        for(User user : userService.readAllUser()){
-            beforeNames.add(user.getName());
-        }
         System.out.println(String.join(", " , beforeNames));
 
         // 여기에서 각 유저의 새 이름을 직접 지정해 수정한다.
@@ -64,63 +72,67 @@ public class JavaApplication {
         userService.updateUser(user2.getId(), "이강함");
 
         // 수정 후 유저 이름 목록
-        List<String> afterNames = new ArrayList<>();
+        List<String> afterNames = userService.readAllUser()
+                .stream()
+                .map(User::getName)
+                .collect(Collectors.toList());
+
         System.out.println("=== 수정 후 유저 이름 리스트 ===");
-        for (User user : userService.readAllUser()) {
-            afterNames.add(user.getName());
-        }
         System.out.println(String.join(", " , afterNames));
 
         /* 5. 수정된 유저 데이터를 조회한다. */
-        List<User> updatedUserInfo = new ArrayList<>();
-        // 전체 유저 목록을 조회한다.
-        for(User user : userService.readAllUser()){
-            // 수정 전 유저 이름 목록에 없는 유저 이름만 수정된 유저로 판단한다.
-            if(!beforeNames.contains(user.getName())){
-                updatedUserInfo.add(user);
-            }
-        }
+        List<User> updatedUserInfo = userService.readAllUser().stream()
+                .filter(user -> !beforeNames.contains(user.getName()))
+                .collect(Collectors.toList());
 
         System.out.println("====== 수정된 유저 명단 ======");
-        for (User user : updatedUserInfo) {
-            System.out.print(user);
-        }
+        updatedUserInfo.stream()
+                .forEach(user -> System.out.print(user));
+
         System.out.println("=".repeat(26));
         System.out.println();
 
-        /* 6. 수정 후 전체 유저를 조회 */
-        System.out.println("=== 수정된 후 전체 유저 조회 ===");
-        for(User user : userService.readAllUser()){
-            System.out.print(user);
-        }
+        /* 6. 수정 이후 전체 유저를 조회한다 */
+        System.out.println("=== 수정 이후 전체 유저 조회 ===");
+        userService.readAllUser().stream()
+                .forEach(user -> System.out.print(user));
+
         System.out.println("=".repeat(27));
         System.out.println();
 
         /* 7. 유저 정보를 삭제한다. */
+        System.out.println("삭제 대상: \"" + user2.getName() + "\"");
         userService.deleteUser(user2.getId()); // 이강함 유저를 삭제합니다.
 
         /* 8. 삭제한 유저가 더 이상 조회되지 않는지 확인한다. */
         try {
             userService.readUser(user2.getId());
-            System.out.println("삭제 확인 실패: 유저가 여전히 존재합니다.");
+            System.out.println("삭제 확인 실패: \""
+                    + user2.getName() + "\" 유저가 여전히 존재합니다.");
         } catch (IllegalArgumentException exception) {
-            System.out.println("삭제 확인 성공: 삭제한 유저가 더 이상 조회되지 않습니다.");
+            System.out.println("삭제 확인 성공: 삭제한 \""
+                    + user2.getName() + "\" 유저가 더 이상 조회되지 않습니다.");
         }
 
         /* 9. 삭제 후 전체 유저를 조회한다. */
         System.out.println("=== 삭제 후 유저 목록 ===");
-        for (User user : userService.readAllUser()) {
-            System.out.print(user);
-        }
+        userService.readAllUser().stream()
+                .forEach(user ->
+                        System.out.print(user));
+
         System.out.println("=".repeat(22));
+        System.out.println();
     }
 
-    /** 채널 CRUD 테스트를 위해 구현한 메서드입니다. */
+    /*
+     * 채널 CRUD 테스트를 위해 구현한 메서드입니다.
+     */
     private static void printChannelInformation() {
-        System.out.println("=====( 채널 CRUD 테스트 )=====\n");
 
+        System.out.println("=====( 채널 CRUD 테스트 )=====\n");
         /* 1. 채널 서비스 구현체를 생성한다. (상위 타입으로) */
-        ChannelService channelService = new JCFChannelService();
+        UserService userService = new JCFUserService();
+        ChannelService channelService = new JCFChannelService(userService);
 
         /* 2. Channel 객체를 생성하고 채널 이름을 등록한다. */
         Channel channel1 = new Channel("공지사항");
@@ -131,26 +143,26 @@ public class JavaApplication {
         channelService.createChannel(channel3); // "질문답변" 채널 등록
 
         System.out.println("=== 채널 생성 결과 ===");
-        for (Channel channel : channelService.readAllChannel()) {
-            System.out.println(channel.getName() + " 채널이 생성되었습니다~");
-        }
+        channelService.readAllChannel().stream()
+                .forEach(channel ->
+                        System.out.println(channel.getName() + " 채널이 생성되었습니다."));
         System.out.println("=".repeat(19));
         System.out.println();
 
-        /* 3. 채널 정보를 단건으로 조회한다. */
+        /* 3. 각각의 채널 정보를 단건으로 조회한다. */
         System.out.println("==== 단건 조회 ====");
-        System.out.print(channelService.readChannel(channel1.getId())); // 공지사항 채널 정보 조회
-        System.out.print(channelService.readChannel(channel2.getId())); // 자유게시판 채널 정보 조회
-        System.out.print(channelService.readChannel(channel3.getId())); // 질문답변 채널 정보 조회
+        System.out.print(channelService.readChannel(channel1.getId()));
+        System.out.print(channelService.readChannel(channel2.getId()));
+        System.out.print(channelService.readChannel(channel3.getId()));
         System.out.println("=".repeat(17));
         System.out.println();
 
         /* 4. 채널 이름을 수정한다. (수정 전과 수정 후) */
         // 수정 전 채널 이름 목록
-        List<String> beforeNames = new ArrayList<>();
-        for (Channel channel : channelService.readAllChannel()) {
-            beforeNames.add(channel.getName());
-        }
+        List<String> beforeNames = channelService.readAllChannel()
+                .stream()
+                .map(Channel::getName)
+                .collect(Collectors.toList());
 
         System.out.println("=== 수정 전 채널 이름 리스트 ===");
         System.out.println(String.join(", ", beforeNames));
@@ -160,81 +172,122 @@ public class JavaApplication {
         channelService.updateChannel(channel2.getId(), "자유");
 
         // 수정 후 채널 이름 목록
-        List<String> afterNames = new ArrayList<>();
-        for (Channel channel : channelService.readAllChannel()) {
-            afterNames.add(channel.getName());
-        }
+        List<String> afterNames = channelService.readAllChannel()
+                .stream()
+                .map(Channel::getName)
+                .collect(Collectors.toList());
 
         System.out.println("=== 수정 후 채널 이름 리스트 ===");
         System.out.println(String.join(", ", afterNames));
 
         /* 5. 수정된 채널 데이터를 조회한다. */
-        List<Channel> updatedChannels = new ArrayList<>();
-        // 전체 채널 목록을 조회한다.
-        for (Channel channel : channelService.readAllChannel()) {
-            // 수정 전 채널 이름 목록에 없는 채널 이름만 수정된 채널로 판단한다.
-            if (!beforeNames.contains(channel.getName())) {
-                updatedChannels.add(channel);
-            }
-        }
+        List<Channel> updatedChannels = channelService.readAllChannel().stream()
+                .filter(channel -> !beforeNames.contains(channel.getName()))
+                .collect(Collectors.toList());
 
         System.out.println("====== 수정된 채널 명단 ======");
-        for (Channel channel : updatedChannels) {
-            System.out.print(channel);
-        }
+        updatedChannels.stream()
+                .forEach(channel -> System.out.print(channel));
+
         System.out.println("=".repeat(26));
         System.out.println();
 
-        /* 6. 수정 후 전체 채널을 조회한다. */
-        System.out.println("=== 수정된 후 전체 채널 조회 ===");
-        for (Channel channel : channelService.readAllChannel()) {
-            System.out.print(channel);
-        }
+        /* 6. 수정 이후 전체 채널을 조회한다. */
+        System.out.println("=== 수정 이후 전체 채널 조회 ===");
+        channelService.readAllChannel().stream()
+                .forEach(channel -> System.out.print(channel));
+
         System.out.println("=".repeat(27));
         System.out.println();
 
         /* 7. 채널 정보를 삭제한다. */
-        channelService.deleteChannel(channel2.getId());
+        System.out.println("삭제 대상: \"" + channel2.getName() + "\"");
+        channelService.deleteChannel(channel2.getId()); // 자유 채널을 삭제합니다.
 
         /* 8. 삭제한 채널이 더 이상 조회되지 않는지 확인한다. */
         try {
             channelService.readChannel(channel2.getId());
-            System.out.println("삭제 확인 실패: 채널이 여전히 존재합니다.");
+            System.out.println("삭제 확인 실패: \""
+                    + channel2.getName() + "\" 채널이 여전히 존재합니다.");
         } catch (IllegalArgumentException exception) {
-            System.out.println("삭제 확인 성공: 삭제한 채널이 더 이상 조회되지 않습니다.");
+            System.out.println("삭제 확인 성공: 삭제한 \""
+                    + channel2.getName() + "\" 채널이 더 이상 조회되지 않습니다.");
         }
 
         /* 9. 삭제 후 전체 채널을 조회한다. */
         System.out.println("=== 삭제 후 채널 목록 ===");
-        for (Channel channel : channelService.readAllChannel()) {
-            System.out.print(channel);
-        }
+        channelService.readAllChannel().stream()
+                .forEach(channel -> System.out.print(channel));
+
         System.out.println("=".repeat(22));
+        System.out.println();
     }
 
-    /** 메시지 CRUD 테스트를 위해 구현한 메서드입니다. */
+    /*
+     * 메시지 CRUD 테스트를 위해 구현한 메서드입니다.
+     */
     private static void printMessageInformation() {
-        System.out.println("=====( 메시지 CRUD 테스트 )=====\n");
 
+        System.out.println("=====( 메시지 CRUD 테스트 )=====\n");
         /* 1. 메시지 서비스 구현체를 생성한다. (상위 타입으로)  */
-        MessageService messageService = new JCFMessageService();
+        UserService userService = new JCFUserService();
+        ChannelService channelService = new JCFChannelService(userService);
+        MessageService messageService = new JCFMessageService(userService, channelService);
+
+        User author = new User("최명하");
+        Channel channel = new Channel("공지");
+
+        userService.createUser(author);
+        channelService.createChannel(channel);
+        channelService.joinChannel(channel.getId(), author.getId());
 
         /* 2. Message 객체를 생성하고 메시지 내용을 등록한다. */
-        Message message1 = new Message("안녕하세요");
-        Message message2 = new Message("반갑습니다");
-        Message message3 = new Message("오늘 회의 안내입니다");
-        messageService.createMessage(message1); // "안녕하세요" 메시지 내용 등록
-        messageService.createMessage(message2); // "반갑습니다" 메시지 내용 등록
-        messageService.createMessage(message3); // "오늘 회의 안내입니다" 메시지 내용 등록
+        Message message1 = new Message("안녕하세요", author.getId(), channel.getId());
+        Message message2 = new Message("반갑습니다", author.getId(), channel.getId());
+        Message message3 = new Message("오늘 회의 안내입니다", author.getId(), channel.getId());
+        messageService.createMessage(message1);
+        messageService.createMessage(message2);
+        messageService.createMessage(message3);
 
-        System.out.println("=== 메시지 생성 결과 ===");
-        for (Message message : messageService.readAllMessage()) {
-            System.out.println(message.getContent() + " 메시지가 생성되었습니다~");
+        User outsider = new User("박코딩");
+        userService.createUser(outsider);
+
+        // 박코딩을 채널에 참여시킨다.
+        channelService.joinChannel(channel.getId(), outsider.getId());
+
+        try {
+            Message rejectMessage = new Message("참여하지 않은 유저의 메시지 : "
+                                    , outsider.getId(),
+                                    channel.getId());
+
+            messageService.createMessage(rejectMessage);
+            System.out.println("검사 실패 : 참여하지 않은 유저의 메시지가 생성되었습니다.");
+        } catch (IllegalArgumentException exception){
+            System.out.println("검사 성공 : " + exception.getMessage());
         }
+
+        System.out.println("퇴장 대상 : \"" + author.getName() + "\"");
+        channelService.leaveChannel(channel.getId(), author.getId());
+        try {
+            Message rejectedMessage = new Message("퇴장 후 작성한 메시지",
+                                    author.getId(),
+                                    channel.getId());
+
+            messageService.createMessage(rejectedMessage);
+            System.out.println("검사 실패 : 퇴장한 \"" + author.getName() + "\"유저의 메시지가 생성되었습니다.");
+        } catch (IllegalArgumentException exception){
+            System.out.println("검사 성공 : " + exception.getMessage());
+        }
+
+        System.out.println("\n=== 메시지 생성 결과 ===");
+        messageService.readAllMessage().stream()
+                .forEach(message ->
+                        System.out.println
+                                ("\"" +message.getContent()+ "\" 라는 내용을 생성하였습니다."));
         System.out.println("=".repeat(19));
         System.out.println();
 
-        /* 3. 메시지 정보를 단건으로 조회한다. */
+        /* 3. 각각의 메시지 정보를 단건으로 조회한다. */
         System.out.println("==== 단건 조회 ====");
         System.out.print(messageService.readMessage(message1.getId()));
         System.out.print(messageService.readMessage(message2.getId()));
@@ -243,66 +296,67 @@ public class JavaApplication {
         System.out.println();
 
         /* 4. 메시지 내용을 수정한다. (수정 전과 수정 후) */
-        List<String> beforeContents = new ArrayList<>();
-        for (Message message : messageService.readAllMessage()) {
-            beforeContents.add(message.getContent());
-        }
+        List<String> beforeContents = messageService.readAllMessage()
+                .stream()
+                .map(Message::getContent)
+                .collect(Collectors.toList());
 
         System.out.println("=== 수정 전 메시지 내용 리스트 ===");
         System.out.println(String.join(", ", beforeContents));
 
+        // 여기에서 각 메시지의 새 내용을 직접 지정해 수정한다.
         messageService.updateMessage(message1.getId(), "안녕하세요!");
         messageService.updateMessage(message2.getId(), "반갑습니다!");
 
-        List<String> afterContents = new ArrayList<>();
-        for (Message message : messageService.readAllMessage()) {
-            afterContents.add(message.getContent());
-        }
+        // 수정 후 메시지 내용 목록
+        List<String> afterContents = messageService.readAllMessage()
+                .stream()
+                .map(Message::getContent)
+                .collect(Collectors.toList());
 
         System.out.println("=== 수정 후 메시지 내용 리스트 ===");
         System.out.println(String.join(", ", afterContents));
 
         /* 5. 수정된 메시지 데이터를 조회한다. */
-        List<Message> updatedMessages = new ArrayList<>();
-        // 전체 메시지 목록을 조회한다.
-        for (Message message : messageService.readAllMessage()) {
-            // 수정 전 메시지 내용 목록에 없는 내용을 가진 메시지를 수정된 메시지로 판단한다.
-            if (!beforeContents.contains(message.getContent())) {
-                updatedMessages.add(message);
-            }
-        }
+        List<Message> updatedMessages = messageService.readAllMessage().stream()
+                .filter(message -> !beforeContents.contains(message.getContent()))
+                .collect(Collectors.toList());
 
         System.out.println("====== 수정된 메시지 명단 ======");
-        for (Message message : updatedMessages) {
-            System.out.print(message);
-        }
+        updatedMessages.stream()
+                .forEach(message -> System.out.print(message));
+
         System.out.println("=".repeat(26));
         System.out.println();
 
         /* 6. 수정 후 전체 메시지 목록을 조회한다. */
-        System.out.println("=== 수정된 후 전체 메시지 조회 ===");
-        for (Message message : messageService.readAllMessage()) {
-            System.out.print(message);
-        }
+        System.out.println("=== 수정 이후 전체 메시지 조회 ===");
+        messageService.readAllMessage().stream()
+                .forEach(message -> System.out.print(message));
+
         System.out.println("=".repeat(27));
         System.out.println();
 
         /* 7. 메시지를 삭제한다. */
+        System.out.println("삭제할 메시지: \"" + message2.getContent() + "\"");
         messageService.deleteMessage(message2.getId());
 
         /* 8. 삭제한 메시지가 더 이상 조회되지 않는지 확인한다. */
         try {
             messageService.readMessage(message2.getId());
-            System.out.println("삭제 확인 실패: 메시지가 여전히 존재합니다.");
+            System.out.println("삭제 확인 실패: \""
+                    + message2.getContent() + "\" 라는 메시지가 여전히 존재합니다.");
         } catch (IllegalArgumentException exception) {
-            System.out.println("삭제 확인 성공: 삭제한 메시지가 더 이상 조회되지 않습니다.");
+            System.out.println("삭제 확인 성공: \""
+                    + message2.getContent() + "\" 라는 메시지가 더 이상 조회되지 않습니다.");
         }
 
         /* 9. 삭제 후 전체 메시지를 조회한다. */
         System.out.println("=== 삭제 후 메시지 목록 ===");
-        for (Message message : messageService.readAllMessage()) {
-            System.out.print(message);
-        }
+        messageService.readAllMessage().stream()
+                .forEach(message -> System.out.print(message));
+
         System.out.println("=".repeat(22));
+
     }
 }

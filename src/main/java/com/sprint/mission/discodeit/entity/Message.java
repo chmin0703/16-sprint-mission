@@ -6,11 +6,36 @@ import java.util.UUID;
 public class Message extends BaseEntity {
     // 메시지의 필드 선언.
     private String content;
+    private final UUID authorId;
+    private final UUID channelId;
 
     // Message 객체를 생성할 때 메시지 내용을 전달받는다.
-    public Message(String content) {
+    public Message(String content, UUID authorId, UUID channelId) {
         super(); // 부모 클래스 생성자에서 ID와 생성·수정 시각을 초기화한다.
-        this.content = content; // 전달받은 메시지 내용을 필드에 저장한다.
+
+        // 메시지 내용을 적을 때 null값 이거나 공백일때 예외 처리하는 검사입니다.
+        if (content == null || content.isBlank()){
+            throw new IllegalArgumentException("메시지 내용을 적어주세요.");
+        }
+        if (authorId == null){
+            throw new IllegalArgumentException("작성자 ID는 필수입니다.");
+        }
+        if (channelId == null){
+            throw new IllegalArgumentException("채널 ID는 필수입니다.");
+        }
+
+        // 검사가 끝나면 전달받은 메시지 내용을 필드에 저장한다.
+        this.content = content;
+        this.authorId = authorId;
+        this.channelId = channelId;
+    }
+
+    public UUID getAuthorId() {
+        return authorId;
+    }
+
+    public UUID getChannelId() {
+        return channelId;
     }
 
     // 저장된 메시지 내용을 반환하는 Getter 메서드입니다.
@@ -30,7 +55,7 @@ public class Message extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Message{id:'" + getId() + "'},{" + "content:'" + content + "'}, {createAt: "
-                + getCreateAt() + " },{updateAt: " + getUpdateAt() + " }\n";
+        return "Message{id:'" + getId() + "'},{" + "content:'" + content + "'}, {createdAt: "
+                + getCreatedAt() + " },{updatedAt: " + getUpdatedAt() + " }\n";
     }
 }
