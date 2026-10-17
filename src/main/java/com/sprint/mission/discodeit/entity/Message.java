@@ -6,18 +6,18 @@ import java.util.UUID;
 public class Message extends BaseEntity {
     // 메시지의 필드 선언.
     private String content;
-    private final UUID authorId;
+    private final UUID plannerId;
     private final UUID channelId;
 
     // Message 객체를 생성할 때 메시지 내용을 전달받는다.
-    public Message(String content, UUID authorId, UUID channelId) {
+    public Message(String content, UUID plannerId, UUID channelId) {
         super(); // 부모 클래스 생성자에서 ID와 생성·수정 시각을 초기화한다.
 
         // 메시지 내용을 적을 때 null값 이거나 공백일때 예외 처리하는 검사입니다.
         if (content == null || content.isBlank()){
             throw new IllegalArgumentException("메시지 내용을 적어주세요.");
         }
-        if (authorId == null){
+        if (plannerId == null){
             throw new IllegalArgumentException("작성자 ID는 필수입니다.");
         }
         if (channelId == null){
@@ -26,12 +26,12 @@ public class Message extends BaseEntity {
 
         // 검사가 끝나면 전달받은 메시지 내용을 필드에 저장한다.
         this.content = content;
-        this.authorId = authorId;
+        this.plannerId = plannerId;
         this.channelId = channelId;
     }
 
-    public UUID getAuthorId() {
-        return authorId;
+    public UUID getPlannerId() {
+        return plannerId;
     }
 
     public UUID getChannelId() {

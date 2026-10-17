@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.service.jcf;
 
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
+
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -24,16 +26,18 @@ public class JCFMessageService implements MessageService {
     @Override
     public Message createMessage(Message message) {
         // 작성자와 채널이 실제로 존재하는지 확인한다.
-        userService.readUser(message.getAuthorId());
+        User planner = userService.readUser(message.getPlannerId());
+        userService.readUser(message.getPlannerId());
         channelService.readChannel(message.getChannelId());
 
         // 작성자가 해당 채널에 참여 중인지 확인한다.
-        if (!channelService.isMember(message.getChannelId(), message.getAuthorId())){
-            throw new IllegalArgumentException("작성자가 해당 채널에 참여 중이 아닙니다.");
+        if (!channelService.isMember(message.getChannelId(), message.getPlannerId())){
+            throw new IllegalArgumentException
+                    ("\'" + planner.getName() + "\' (이)가 해당 채널에 참여 중이 아닙니다.");
         }
 
-        data.add(message); // 메시지를 목록에 추가한다.
-        return message; // 추가한 메시지를 반환한다.
+        data.add(message);  // 메시지를 목록에 추가한다.
+        return message;     // 추가한 메시지를 반환한다.
     }
 
     @Override

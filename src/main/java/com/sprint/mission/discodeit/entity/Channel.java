@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,7 +9,13 @@ import java.util.UUID;
 public class Channel extends BaseEntity {
     // 채널의 필드 선언.
     private String name;
-    private final Set<UUID> memberIds = new HashSet<>();
+
+    // 채널 참가된 유저들을 순서대로 받기위해 LinkedHashSet 으로 묶는다.
+    private final Set<UUID> memberIds = new LinkedHashSet<>();
+
+    public Set<UUID> getMemberIds() {
+        return new HashSet<>(memberIds);
+    }
 
     // 유저를 채널에 참가시킨다.
     public void addMember(UUID userId){

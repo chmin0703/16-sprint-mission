@@ -27,12 +27,12 @@ public class JavaApplication {
      */
     private static void printUserInformation(){
 
-        System.out.println("=====( 유저 CRUD 테스트 )=====" + "\n");
+        System.out.println("####### 유저 CRUD 테스트 #######\n");
         /* 1. 유저 서비스 구현체를 생성한다. (상위 타입으로) */
         UserService userService = new JCFUserService();
 
         /* 2. User 객체를 생성하고 유저 이름을 등록한다. */
-        User user1 = new User("최명함");
+        User user1 = new User("최명하");
         User user2 = new User("이강한");
         User user3 = new User("박코딩");
         User user4 = new User("김자바");
@@ -68,8 +68,8 @@ public class JavaApplication {
         System.out.println(String.join(", " , beforeNames));
 
         // 여기에서 각 유저의 새 이름을 직접 지정해 수정한다.
-        userService.updateUser(user1.getId(), "최명하");
-        userService.updateUser(user2.getId(), "이강함");
+        userService.updateUser(user1.getId(), "최명함"); // "최명하" -> "최명함"
+        userService.updateUser(user2.getId(), "이강함"); // "이강한" -> "이강함"
 
         // 수정 후 유저 이름 목록
         List<String> afterNames = userService.readAllUser()
@@ -129,7 +129,7 @@ public class JavaApplication {
      */
     private static void printChannelInformation() {
 
-        System.out.println("=====( 채널 CRUD 테스트 )=====\n");
+        System.out.println("####### 채널 CRUD 테스트 #######\n");
         /* 1. 채널 서비스 구현체를 생성한다. (상위 타입으로) */
         UserService userService = new JCFUserService();
         ChannelService channelService = new JCFChannelService(userService);
@@ -228,54 +228,102 @@ public class JavaApplication {
      */
     private static void printMessageInformation() {
 
-        System.out.println("=====( 메시지 CRUD 테스트 )=====\n");
+        System.out.println("####### 메시지 CRUD 테스트 #######\n");
         /* 1. 메시지 서비스 구현체를 생성한다. (상위 타입으로)  */
         UserService userService = new JCFUserService();
         ChannelService channelService = new JCFChannelService(userService);
         MessageService messageService = new JCFMessageService(userService, channelService);
 
-        User author = new User("최명하");
-        Channel channel = new Channel("공지");
+        // 유저들을 채널에 참여시키기 위해 새로운 객체를 생성한다.
+        User planner = new User("최명함");
+        User backendDeveloper = new User("박코딩");
+        User javaDeveloper = new User("이자바");
+        Channel channelV1 = new Channel("개발 커뮤니티");
 
-        userService.createUser(author);
-        channelService.createChannel(channel);
-        channelService.joinChannel(channel.getId(), author.getId());
+        // 유저들이 "개발 커뮤니티" 채널에 각각 서비스 등록을 한다.
+        userService.createUser(planner);
+        userService.createUser(backendDeveloper);
+        userService.createUser(javaDeveloper);
+        channelService.createChannel(channelV1);
+
+        String beforeJoinContent = "참여 전에 작성한 메시지";
+
+        // 채널에 참여하지 않은 "최명함" 의 메시지 생성을 시도한다.
+        try {
+            // 메시지 내용, 작성자 ID, 채널 ID를 전달해 메시지를 생성한다.
+            Message rejectMessage = new Message(beforeJoinContent, planner.getId(), channelV1.getId());
+
+            messageService.createMessage(rejectMessage);
+            System.out.println("검사 실패 : 메시지가 생성되었습니다.");
+        } catch (IllegalArgumentException exception){
+            // 채널 미참여로 메시지 생성이 거부된 결과를 출력한다.
+            System.out.println("\'" + beforeJoinContent +  "\' 생성 거부 : " + exception.getMessage());
+        }
+
+        // (최명함, 박코딩, 이자바)가 "개발 커뮤니티" 채널에 참여시킨다.
+        System.out.println("입장 대상: \"" + planner.getName() + "\"");
+        channelService.joinChannel(channelV1.getId(), planner.getId()); // 최명함 채널 참가.
+        System.out.println("\'" + planner.getName() + "\' 유저가 \'"
+                        + channelV1.getName() + "\' 채널에 입장했습니다.");
+
+        System.out.println("입장 대상: \"" + backendDeveloper.getName() + "\"");
+        // 박코딩 개발 커뮤니티 채널 참가
+        channelService.joinChannel(channelV1.getId(), backendDeveloper.getId());
+        System.out.println("\'" + backendDeveloper.getName() + "\' 유저가 \'"
+                + channelV1.getName() + "\' 채널에 입장했습니다.");
+
+        System.out.println("입장 대상: \"" + javaDeveloper.getName() + "\"");
+        channelService.joinChannel(channelV1.getId(), javaDeveloper.getId());
+        System.out.println("\'" + javaDeveloper.getName() + "\' 유저가 \'"
+                + channelV1.getName() + "\' 채널에 입장했습니다.");
+
+        System.out.println();
 
         /* 2. Message 객체를 생성하고 메시지 내용을 등록한다. */
-        Message message1 = new Message("안녕하세요", author.getId(), channel.getId());
-        Message message2 = new Message("반갑습니다", author.getId(), channel.getId());
-        Message message3 = new Message("오늘 회의 안내입니다", author.getId(), channel.getId());
+        Message message1 = new Message("안녕하세요", planner.getId(), channelV1.getId());
+        Message message2 = new Message("반갑습니다", planner.getId(), channelV1.getId());
+        Message message3 = new Message("오늘 회의 안내입니다", planner.getId(), channelV1.getId());
         messageService.createMessage(message1);
         messageService.createMessage(message2);
         messageService.createMessage(message3);
 
-        User outsider = new User("박코딩");
-        userService.createUser(outsider);
+        System.out.println("==== 개발 커뮤니티 입장 유저 목록 ====");
+        String joinUserNames = channelV1.getMemberIds().stream()
+                // 유저들을 단건으로 읽는다.
+                .map(userService::readUser)
+                // 유저들의 이름을 가져온다.
+                .map(User::getName)
+                .collect(Collectors.joining(", "));
+        System.out.println(joinUserNames);
+        System.out.println("=".repeat(31));
+        System.out.println();
 
-        // 박코딩을 채널에 참여시킨다.
-        channelService.joinChannel(channel.getId(), outsider.getId());
+        // "최명하" 를 채널에 참여시킨 뒤 퇴장시킨다. 그리고 해당 채널에서 "최명하"의 참여 정보를 삭제한다.
+        System.out.println("퇴장 대상 : \"" + planner.getName() + "\"");
+        channelService.leaveChannel(channelV1.getId(), planner.getId());
+        System.out.println("\"" + planner.getName() + "\" 유저가 \""
+                + channelV1.getName() + "\" 채널에서 퇴장했습니다.");
 
+        System.out.println("==== 개발 커뮤니티 퇴장 후 유저 목록 ====");
+        String exitUserNames = channelV1.getMemberIds().stream()
+                .map(userService::readUser)
+                .map(User::getName)
+                .collect(Collectors.joining(", "));
+
+        System.out.println(exitUserNames);
+        System.out.println("=".repeat(38));
+
+        String afterLeaveContent = "퇴장 후 작성한 메시지";
+
+        // 퇴장한 "최명하"의 메시지 생성을 시도한다.
         try {
-            Message rejectMessage = new Message("참여하지 않은 유저의 메시지 : "
-                                    , outsider.getId(),
-                                    channel.getId());
-
-            messageService.createMessage(rejectMessage);
-            System.out.println("검사 실패 : 참여하지 않은 유저의 메시지가 생성되었습니다.");
-        } catch (IllegalArgumentException exception){
-            System.out.println("검사 성공 : " + exception.getMessage());
-        }
-
-        System.out.println("퇴장 대상 : \"" + author.getName() + "\"");
-        channelService.leaveChannel(channel.getId(), author.getId());
-        try {
-            Message rejectedMessage = new Message("퇴장 후 작성한 메시지",
-                                    author.getId(),
-                                    channel.getId());
+            // 메시지 내용, 작성자 ID, 채널 ID를 전달해 메시지를 생성한다.
+            Message rejectedMessage = new Message(afterLeaveContent, planner.getId(), channelV1.getId());
 
             messageService.createMessage(rejectedMessage);
-            System.out.println("검사 실패 : 퇴장한 \"" + author.getName() + "\"유저의 메시지가 생성되었습니다.");
+            System.out.println("검사 실패 : 퇴장한 \"" + planner.getName() + "\"유저의 메시지가 생성되었습니다.");
         } catch (IllegalArgumentException exception){
+            // 채널에서 퇴장했기 때문에 메시지 생성이 거부된 결과를 출력한다.
             System.out.println("검사 성공 : " + exception.getMessage());
         }
 
@@ -357,6 +405,5 @@ public class JavaApplication {
                 .forEach(message -> System.out.print(message));
 
         System.out.println("=".repeat(22));
-
     }
 }
