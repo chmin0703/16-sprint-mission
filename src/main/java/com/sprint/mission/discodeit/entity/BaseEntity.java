@@ -1,8 +1,12 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public abstract class BaseEntity {
+// User, Channel, Message는 BaseEntity를 상속하므로 파일 직렬화가 가능해진다.
+public abstract class BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     // 객체의 고유 ID와 생성 시각, 수정 시각을 저장하는 필드
     private final UUID id;
