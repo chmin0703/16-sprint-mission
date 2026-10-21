@@ -17,12 +17,6 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/* 저장 로직: data 목록을 .ser 파일에서 불러오고 저장하는 코드예요.
-* FILE_PATH, loadData(), saveData(), ObjectInputStream, ObjectOutputStream이 해당합니다. */
-
-/*
-*
-* */
 
 public class JavaApplicationVer2 {
     public static void main(String[] args) {
