@@ -6,9 +6,8 @@ import com.sprint.mission.discodeit.repository_jcf_consoleRun.ReJCFMessageConsol
 
 public class JavaApplicationVer3 {
     public static void main(String[] args) {
-
         ReJCFUserConsoleRun.printUserRepositoryInformation();
-//        ReJCFUserConsoleRun.printUserRepositoryInformation();
-//        ReJCFUserConsoleRun.printUserRepositoryInformation();
+        ReJCFChannelConsoleRun.printChannelRepositoryInformation();
+        ReJCFMessageConsoleRun.printMessageRepositoryInformation();
     }
 }

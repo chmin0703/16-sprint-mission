@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.repository_file_consoleRun;
 
 import com.sprint.mission.discodeit.entity.User;
+
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.file.FileUserRepository;
 
@@ -9,7 +10,12 @@ import java.util.stream.Collectors;
 
 public class ReFileUserConsoleRun {
 
-    public static void printUserRepositoryInformation() {
+    /*
+     * File Repository CRUD 테스트
+     * 저장 방식: 파일에 직렬화하여 저장
+     * 저장 로직: 파일에서 데이터를 불러오고, 변경된 목록을 파일에 저장
+     */
+    public static void printFileUserRepositoryInformation() {
 
         System.out.println("####### 유저 File Repository 테스트 #######\n");
 
