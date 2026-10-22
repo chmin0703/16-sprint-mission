@@ -7,9 +7,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageRepository {
-    Message save(Message user);
-    Optional<Message> findById(UUID id);
+    // 생성 + 수정
+    Message save(Message message);
+    // 단건 조회
+    Optional<Message> findByMessageId(UUID id);
+    // 전체 조회
     List<Message> findAll();
-    boolean existsById(UUID id);
-    void deleteById(UUID id);
+    // 삭제
+    boolean existsByMessageId(UUID id);
+    // 존재 여부 검사
+    void deleteByMessageId(UUID id);
 }

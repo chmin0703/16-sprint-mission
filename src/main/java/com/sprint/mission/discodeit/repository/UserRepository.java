@@ -7,10 +7,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository {
-    User createUser(User user);
-    User updateUser(User user);
+    // 생성 + 수정
+    User save(User user);
+    // 단건 조회
     Optional<User> findByUserId(UUID id);
+    // 전체 조회
     List<User> findAll();
-    boolean existsByUserId(UUID id);
+    // 삭제
     void deleteByUserId(UUID id);
+    // 존재 여부 검사
+    boolean existsByUserId(UUID id);
 }

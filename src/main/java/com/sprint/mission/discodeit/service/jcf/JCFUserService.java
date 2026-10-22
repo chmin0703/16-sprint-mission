@@ -67,8 +67,8 @@ public class JCFUserService implements UserService {
         if (duplicated) {
             throw new IllegalArgumentException("중복된 유저 이름입니다.");
         }
-        targetUser.changeName(name);    // 이름을 변경하고 수정 시각을 갱신한다.
-        return targetUser;              // 이름을 변경한 유저 객체를 반환한다.
+        targetUser.changeName(name); // 이름을 변경하고 수정 시각을 갱신한다.
+        return targetUser; // 이름을 변경한 유저 객체를 반환한다.
     }
 
     // 전달받은 ID와 일치하는 유저를 찾아 삭제한다.
