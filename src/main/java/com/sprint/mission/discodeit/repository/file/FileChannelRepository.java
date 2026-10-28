@@ -71,21 +71,32 @@ public class FileChannelRepository implements ChannelRepository {
 
     @Override
     public Channel save(Channel channel) {
+        // 변경 전 채널 목록을 보관한다.
+        List<Channel> prevData = new ArrayList<>(data);
+        try {
+            // 기존 채널 목록에서 같은 ID를 가진 채널을 찾는다.
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).getId().equals(channel.getId())) {
+                    // 같은 ID를 가진 채널을 새 채널 객체로 교체한다.
+                    data.set(i, channel);
 
-        // 같은 ID를 가진 채널이 존재하면 수정한다.
-        if (existsByChannelId(channel.getId())){
-            int index = IntStream.range(0, data.size())
-                    .filter(i -> data.get(i).getId().equals(channel.getId()))
-                    .findFirst()
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("수정할 채널을 찾을 수 없습니다."));
-            data.set(index, channel); // 기존 채널 객체를 새 객체로 교체한다. (수정)
-        } else {
-            data.add(channel); // 새로운 채널을 목록에 추가한다. (생성)
+                    // 수정된 채널 목록을 파일에 저장한다.
+                    saveData();
+                    return channel;
+                }
+            }
+            // 같은 ID를 가진 채널이 없으면 새 채널을 추가한다.
+            data.add(channel);
+
+            // 추가된 채널 목록을 파일에 저장한다.
+            saveData();
+            return channel;
+
+        } catch (RuntimeException rtException){
+            // 저장에 실패하면 메모리의 목록을 이전 상태로 복구한다.
+            data = prevData;
+            throw rtException;
         }
-        // 생성 또는 수정된 채널 목록을 파일에 저장한다.
-        saveData();
-        return channel;
     }
 
     @Override
@@ -111,6 +122,9 @@ public class FileChannelRepository implements ChannelRepository {
 
     @Override
     public void deleteByChannelId(UUID id) {
+        // 삭제 전 채널 목록을 보관한다.
+        List<Channel> prevData = new ArrayList<>(data);
+
         // ID가 일치하는 채널을 삭제한다. (삭제)
         boolean remove = data.removeIf(channel -> channel.getId().equals(id));
 
@@ -119,6 +133,13 @@ public class FileChannelRepository implements ChannelRepository {
             throw new IllegalArgumentException("삭제할 채널을 찾을 수 없습니다.");
         }
 
-        saveData(); // 변경된 채널 목록을 파일에 저장한다.
+        try {
+            // 변경된 채널 목록을 파일에 저장한다.
+            saveData();
+        } catch (RuntimeException re){
+            // 파일 저장 실패 시 삭제 전 목록으로 복구한다.
+            data = prevData;
+            throw re;
+        }
     }
 }

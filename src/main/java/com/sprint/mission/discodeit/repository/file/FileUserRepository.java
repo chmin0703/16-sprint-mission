@@ -71,22 +71,32 @@ public class FileUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
+        // 변경 전 유저 목록을 보관한다.
+        List<User> prevData = new ArrayList<>(data);
+        try {
+            // 기존 유저 목록에서 같은 ID를 가진 유저를 찾는다.
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).getId().equals(user.getId())) {
+                    // 같은 ID를 가진 유저를 새 유저 객체로 교체한다.
+                    data.set(i, user);
 
-        // 같은 ID를 가진 유저가 존재하면 수정한다.
-        if (existsByUserId(user.getId())){
-            int index = IntStream.range(0, data.size())
-                    .filter(i -> data.get(i).getId().equals(user.getId()))
-                    .findFirst()
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("수정할 유저를 찾을 수 없습니다."));
+                    // 수정된 유저 목록을 파일에 저장한다.
+                    saveData();
+                    return user;
+                }
+            }
+            // 같은 ID를 가진 유저가 없으면 새 유저를 추가한다.
+            data.add(user);
 
-            data.set(index, user); // 기존 유저를 새 유저 정보로 교체한다. (수정)
-        } else {
-            data.add(user); // 새로운 유저를 목록에 추가한다. (생성)
+            // 추가된 유저 목록을 파일에 저장한다.
+            saveData();
+            return user;
+
+        } catch (RuntimeException rtException){
+            // 저장에 실패하면 메모리의 목록을 이전 상태로 복구한다.
+            data = prevData;
+            throw rtException;
         }
-        // 생성 또는 수정된 유저 목록을 파일에 저장한다.
-        saveData();
-        return user;
     }
 
     @Override

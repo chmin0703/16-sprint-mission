@@ -9,7 +9,6 @@ public class Message extends BaseEntity {
     private final UUID plannerId;
     private final UUID channelId;
 
-    // Message 객체를 생성할 때 메시지 내용을 전달받는다.
     public Message(String content, UUID plannerId, UUID channelId) {
         super(); // 부모 클래스 생성자에서 ID와 생성·수정 시각을 초기화한다.
 

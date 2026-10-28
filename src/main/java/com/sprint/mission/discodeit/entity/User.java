@@ -5,7 +5,6 @@ public class User extends BaseEntity {
     // 유저의 필드 선언
     private String name;
 
-    // User 객체를 생성할 때 사용자 이름을 전달받는다.
     public User(String name) {
         super(); // 부모 클래스 생성자에서 ID와 생성·수정 시각을 초기화한다.
 
