@@ -46,6 +46,9 @@ public class BasicServiceConsoleRun {
         System.out.println("신규 유저 이름 : " + user.getName());
         System.out.println("신규 유저 ID : " + user.getId() + "\n");
 
+        // 3-1. 유저 이름 수정 테스트
+        user = userUpdateTest(userService, user);
+
         // 4. 채널을 생성하고 정보를 출력한다.
         Channel channel = setupChannel(channelService);
         System.out.println("===== 신규 채널 생성 =====");
@@ -71,12 +74,33 @@ public class BasicServiceConsoleRun {
 
         // 6. 메시지 생성 테스트
         messageCreateTest(messageService, channel, user);
+
+        // 7. 변경된 유저 이름, 채널 출력 테스트
+        System.out.println("변경된 유저 ID : " + user.getId() + ", 이름: " + user.getName());
+        System.out.println("생성된 채널 ID : " + channel.getId() + ", 이름: " + channel.getName() + " 채널");
     }
 
     // 유저 생성
     static User setupUser(UserService userService){
         User user = new User("요네즈 켄시");
         return userService.createUser(user);
+    }
+
+    // 유저 이름 수정 테스트
+    static User userUpdateTest(UserService userService, User source){
+        // 기존 유저의 이름을 새로운 이름으로 변경한다.
+        User updatedUser = new User(source, "후지이 카제");
+
+        // 수정된 유저를 서비스에 저장한다.
+        updatedUser = userService.updateUser(
+                updatedUser.getId(), updatedUser.getName());
+
+        System.out.println("===== 유저 이름 수정 =====");
+        System.out.println("변경 전 이름 : " + source.getName());
+        System.out.println("변경 후 이름 : " + updatedUser.getName());
+        System.out.println("유저 ID : " + updatedUser.getId() + "\n");
+
+        return updatedUser;
     }
 
     // 채널 생성
@@ -94,6 +118,6 @@ public class BasicServiceConsoleRun {
         System.out.println("===== 메시지 생성 =====");
         System.out.println("작성자 : " + author.getName());
         System.out.println("메시지 내용 : " + message.getContent());
-        System.out.println("메시지 ID : " + message.getId());
+        System.out.println("메시지 ID : " + message.getId() + "\n");
     }
 }

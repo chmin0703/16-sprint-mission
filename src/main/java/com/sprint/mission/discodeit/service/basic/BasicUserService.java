@@ -62,17 +62,20 @@ public class BasicUserService implements UserService {
                 .anyMatch(otherUser ->
                         !otherUser.getId().equals(id)
                                 && otherUser.getName().equals(name));
+
         // 다른 유저와 이름이 중복되면 예외를 발생시킨다.
         if (duplicated) {
             throw new IllegalArgumentException("중복된 유저 이름입니다.");
         }
 
-        // 유저의 이름을 변경한다.
-        targetUser.changeName(name);
+        // 기존 유저의 정보를 유지하면서 변경된 이름을 가진 새 객체를 생성한다.
+        User updatedUser = new User(targetUser, name);
 
-        // 변경된 유저 정보를 Repository에 저장한다.
-        userRepository.save(targetUser);
-        return targetUser;
+        // 수정된 유저 객체를 저장소에 저장한다.
+        userRepository.save(updatedUser);
+
+        // 수정된 유저 객체를 반환한다.
+        return updatedUser;
     }
 
     @Override
