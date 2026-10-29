@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.service_jcf_consoleRun;
+package com.sprint.mission.discodeit.service.file.service_file_consoleRun;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
@@ -8,40 +8,42 @@ import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 
-import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
-import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
-import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-/* JCF*Service */
-// - "저장 방식": ArrayList 에 보관, "비즈니스 방식": (중복 확인, ID로 조회, 입력 수정, 삭제), "저장 로직": 메모리 목록만 변경
+/* File*Service */
+// - "저장 방식": .ser 파일에 직렬화 보관, "비즈니스 방식": 기본적으로 같은 로직, "저장 로직": 파일 읽기-쓰기 코드 추가
 
-public class JCFMessageConsoleRun {
+public class FileMessageConsoleRun {
 
-    /*
-     * 메시지 CRUD 테스트를 위해 구현한 메서드입니다.
-     */
-    public static void printMessageInformation() {
+    // 전달받은 이름과 일치하는 유저를 조회해 반환한다.
+    private static User findUserByName(UserService userService, String name) {
+        return userService.readAllUser().stream()
+                // 전달받은 이름과 같은 유저만 남긴다.
+                .filter(user -> user.getName().equals(name))
+                // 조건에 맞는 첫 번쨰 유저를 찾는다.
+                .findFirst()
+                // 일치하는 유저가 없으면 예외 발생시킨다.
+                .orElseThrow(() ->
+                        new IllegalArgumentException(name + " 유저를 찾을 수 없습니다."));
+    }
+
+    /* 1. 파일 메시지 서비스 구현체를 매개변수로 생성한다. (상위 타입으로)  */
+    public static void fileMessageInformation(UserService userService,
+                                               ChannelService channelService, MessageService messageService){
 
         System.out.println("####### 메시지 CRUD 테스트 #######\n");
-        /* 1. 메시지 서비스 구현체를 생성한다. (상위 타입으로)  */
-        UserService userService = new JCFUserService();
-        ChannelService channelService = new JCFChannelService(userService);
-        MessageService messageService = new JCFMessageService(userService, channelService);
-
         // 유저들을 채널에 참여시키기 위해 새로운 객체를 생성한다.
-        User planner = new User("최명함");
-        User backendDeveloper = new User("박코딩");
-        User javaDeveloper = new User("이자바");
-        Channel channelV1 = new Channel("개발 커뮤니티");
+        User planner = findUserByName(userService, "최명함");
+        User backendDeveloper = findUserByName(userService, "박코딩");
+        User javaDeveloper = findUserByName(userService, "김자바");
 
         // 유저들이 "개발 커뮤니티" 채널에 각각 서비스 등록을 한다.
-        userService.createUser(planner);
-        userService.createUser(backendDeveloper);
-        userService.createUser(javaDeveloper);
-        channelService.createChannel(channelV1);
+        Channel channelV1 = channelService.readAllChannel().stream()
+                .filter(channel -> channel.getName().equals("개발 커뮤니티"))
+                .findFirst()
+                .orElseGet(() ->
+                        channelService.createChannel(new Channel("개발 커뮤니티")));
 
         String beforeJoinContent = "참여 전에 작성한 메시지";
 
