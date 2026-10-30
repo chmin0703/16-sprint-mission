@@ -112,7 +112,7 @@ public class BasicServiceConsoleRun {
     // 메시지 생성 테스트
     static void messageCreateTest(MessageService messageService,
                                   Channel channel, User author){
-        Message message = new Message("곤니찌와~ 요로시쿠 오네가이시 마스!", author.getId(), channel.getId());
+        Message message = new Message("곤니찌와~ ", author.getId(), channel.getId());
 
         message = messageService.createMessage(message);
         System.out.println("===== 메시지 생성 =====");

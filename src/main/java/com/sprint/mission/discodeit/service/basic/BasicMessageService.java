@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import org.springframework.stereotype.Service;
+
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -10,6 +12,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class BasicMessageService implements MessageService {
 
     // 메시지 데이터의 저장과 조회를 담당할 Repository

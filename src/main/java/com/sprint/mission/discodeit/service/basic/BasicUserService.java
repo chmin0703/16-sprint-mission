@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import org.springframework.stereotype.Service;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
@@ -7,6 +8,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class BasicUserService implements UserService {
 
     // 데이터를 저장하고 조회하는 작업을 담당할 Repository

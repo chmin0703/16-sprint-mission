@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import org.springframework.stereotype.Service;
+
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
@@ -8,6 +10,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class BasicChannelService implements ChannelService {
 
     // 데이터를 저장하고 조회하는 작업을 담당할 Repository
