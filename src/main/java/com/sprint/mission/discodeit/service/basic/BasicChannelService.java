@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.sprint.mission.discodeit.entity.Channel;
@@ -10,20 +11,13 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+@Service // 해당 클래스를 Spring의 Service 계층 Bean으로 등록하여, Spring IoC 컨테이너가 관리하도록 한다.
+@RequiredArgsConstructor // final 필드와 @NonNull 필드를 매개변수로 받는 생성자를 Lombok이 자동으로 생성하도록 한다.
 public class BasicChannelService implements ChannelService {
 
-    // 데이터를 저장하고 조회하는 작업을 담당할 Repository
-    private final ChannelRepository channelRepository;
-
-    // 유저의 존재 여부를 확인하기 위한 UserService
-    private final UserService userService;
-
-    // 생성자를 통해 필요한 의존 객체를 외부에서 주입받는다.
-    public BasicChannelService(ChannelRepository channelRepository, UserService userService) {
-        this.channelRepository = channelRepository;
-        this.userService = userService;
-    }
+    // 필드
+    private final ChannelRepository channelRepository; // 데이터를 저장하고 조회하는 작업을 담당할 Repository
+    private final UserService userService; // 유저의 존재 여부를 확인하기 위한 UserService
 
     @Override
     public Channel createChannel(Channel channel) {

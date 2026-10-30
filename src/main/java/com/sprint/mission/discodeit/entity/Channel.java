@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -8,6 +10,8 @@ import java.util.UUID;
 // Channel 클래스는 BaseEntity 클래스로부터 상속한다.
 public class Channel extends BaseEntity {
     // 채널의 필드 선언.
+
+    @Getter // Lombok을 통해 name의 Getter만 자동 생성
     private String name;
 
     // 채널 참가된 유저들을 순서대로 받기위해 LinkedHashSet 으로 묶는다.
@@ -22,11 +26,6 @@ public class Channel extends BaseEntity {
         }
         // 검사가 끝나면 전달받은 채널 이름을 필드에 저장한다.
         this.name = name;
-    }
-
-    // 저장된 채널 이름을 반환하는 Getter 메서드입니다.
-    public String getName() {
-        return name;
     }
 
     // 전달받은 채널 이름으로 현재 객체의 이름을 변경한다.

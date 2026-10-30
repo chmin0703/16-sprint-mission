@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.sprint.mission.discodeit.entity.Message;
@@ -12,29 +13,18 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.util.List;
 import java.util.UUID;
 
-@Service
+@Service // 해당 클래스를 Spring의 Service 계층 Bean으로 등록하여, Spring IoC 컨테이너가 관리하도록 한다.
+@RequiredArgsConstructor // final 필드와 @NonNull 필드를 매개변수로 받는 생성자를 Lombok이 자동으로 생성하도록 한다.
 public class BasicMessageService implements MessageService {
 
-    // 메시지 데이터의 저장과 조회를 담당할 Repository
-    private final MessageRepository messageRepository;
-
-    // 작성자의 존재 여부를 확인하기 위한 UserService
-    private final UserService userService;
-
-    // 채널의 존재 여부와 멤버 여부를 확인하기 위한 ChannelService
-    private final ChannelService channelService;
-
-    // 생성자를 통해 필요한 의존 객체를 외부에서 주입받는다.
-    public BasicMessageService(MessageRepository messageRepository,
-                               ChannelService channelService,
-                               UserService userService) {
-        this.messageRepository = messageRepository;
-        this.userService = userService;
-        this.channelService = channelService;
-    }
+    // 필드
+    private final MessageRepository messageRepository; // 메시지 데이터의 저장과 조회를 담당할 Repository
+    private final UserService userService; // 작성자의 존재 여부를 확인하기 위한 UserService
+    private final ChannelService channelService; // 채널의 존재 여부와 멤버 여부를 확인하기 위한 ChannelService
 
     @Override
     public Message createMessage(Message message) {
+
         // 작성자가 실제로 존재하는지 확인한다.
         User planner = userService.readUser(message.getPlannerId());
 
@@ -69,16 +59,15 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public Message updateMessage(UUID id, String content) {
-        // 수정할 메시지를 조회한다.
-        Message targetMessage = readMessage(id);
+
+        Message targetMessage = readMessage(id); // 수정할 메시지를 조회한다.
 
         // 기존 내용과 변경할 내용이 같으면 예외를 발생시킨다.
         if (targetMessage.getContent().equals(content)) {
             throw new IllegalArgumentException("기존 메시지 내용과 동일합니다.");
         }
 
-        // 메시지 내용을 변경한다.
-        targetMessage.changeContent(content);
+        targetMessage.changeContent(content); // 메시지 내용을 변경한다.
 
         // 변경된 메시지 정보를 Repository에 저장한다.
         messageRepository.save(targetMessage);

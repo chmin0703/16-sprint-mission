@@ -43,7 +43,7 @@ public class ReFileMessageConsoleRun {
         ChannelService channelService =
                 new BasicChannelService(channelRepository, userService);
         MessageService messageService =
-                new BasicMessageService(messageRepository, channelService, userService);
+                new BasicMessageService(messageRepository, userService, channelService);
 
         // 이후 CRUD 테스트는 JCFUserRepositoryRun과 동일한 방식
         // 2. Message 객체 생성 및 저장
@@ -60,10 +60,10 @@ public class ReFileMessageConsoleRun {
         UUID plannerId = planner.getId();
         UUID channelId = channel.getId();
 
-        Message message1 = new Message("안녕하세요!", plannerId, channelId);
-        Message message2 = new Message("자바 공부 중입니다.", plannerId, channelId);
-        Message message3 = new Message("Repository 테스트입니다.", plannerId, channelId);
-        Message message4 = new Message("삭제할 메시지입니다.", plannerId, channelId);
+        Message message1 = new Message("안녕하세요!", plannerId, channelId, null);
+        Message message2 = new Message("자바 공부 중입니다.", plannerId, channelId, null);
+        Message message3 = new Message("Repository 테스트입니다.", plannerId, channelId, null);
+        Message message4 = new Message("삭제할 메시지입니다.", plannerId, channelId, null);
 
         messageService.createMessage(message1);
         messageService.createMessage(message2);

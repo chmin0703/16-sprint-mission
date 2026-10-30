@@ -3,15 +3,16 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+
+// JCF, File 구현체 및 Basic 구현체를 호출 및 실행하기 위해 import를 적용했습니다.
 import com.sprint.mission.discodeit.repository.file.repo_file_consoleRun.ReFileChannelConsoleRun;
 import com.sprint.mission.discodeit.repository.file.repo_file_consoleRun.ReFileMessageConsoleRun;
 import com.sprint.mission.discodeit.repository.file.repo_file_consoleRun.ReFileUserConsoleRun;
-
 import com.sprint.mission.discodeit.repository.jcf.repo_jcf_consoleRun.ReJCFChannelConsoleRun;
 import com.sprint.mission.discodeit.repository.jcf.repo_jcf_consoleRun.ReJCFMessageConsoleRun;
 import com.sprint.mission.discodeit.repository.jcf.repo_jcf_consoleRun.ReJCFUserConsoleRun;
-
 import com.sprint.mission.discodeit.service.basic.basic_serviceConsoleRun.BasicServiceConsoleRun;
+
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -19,6 +20,8 @@ import com.sprint.mission.discodeit.service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.UUID;
 
 @SpringBootApplication
 public class DiscodeitApplication {
@@ -36,7 +39,7 @@ public class DiscodeitApplication {
         System.out.println(userService.getClass().getSimpleName());
 
         // 3. 유저 생성 및 정보 출력
-        User user = setupUser(userService);
+        User user = setupUser(userService, null);
         System.out.println("\n===== 신규 유저 생성 =====");
         System.out.println("신규 유저 이름 : " + user.getName());
         System.out.println("신규 유저 ID : " + user.getId() + "\n");
@@ -89,8 +92,8 @@ public class DiscodeitApplication {
     }
 
     // 유저 생성
-    static User setupUser(UserService userService){
-        User user = new User("요네즈 켄시");
+    static User setupUser(UserService userService, UUID profileId){
+        User user = new User("요네즈 켄시", profileId);
         return userService.createUser(user);
     }
 
@@ -120,7 +123,8 @@ public class DiscodeitApplication {
     // 메시지 생성 테스트
     static void messageCreateTest(MessageService messageService,
                                   Channel channel, User author){
-        Message message = new Message("곤니찌와~ 요로시쿠 오네가이시 마스!", author.getId(), channel.getId());
+        Message message = new Message(
+                "곤니찌와~ 요로시쿠 오네가이시 마스!", author.getId(), channel.getId(), null);
 
         message = messageService.createMessage(message);
         System.out.println("===== 메시지 생성 =====");

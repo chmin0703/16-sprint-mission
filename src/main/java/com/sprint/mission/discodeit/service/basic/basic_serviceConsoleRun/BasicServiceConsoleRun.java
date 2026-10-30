@@ -38,7 +38,7 @@ public class BasicServiceConsoleRun {
                 channelRepository, userService);
 
         MessageService messageService = new BasicMessageService(
-                messageRepository, channelService, userService);
+                messageRepository, userService, channelService);
 
         // 3. 유저를 생성하고 정보를 출력한다.
         User user = setupUser(userService);
@@ -112,7 +112,7 @@ public class BasicServiceConsoleRun {
     // 메시지 생성 테스트
     static void messageCreateTest(MessageService messageService,
                                   Channel channel, User author){
-        Message message = new Message("곤니찌와~ ", author.getId(), channel.getId());
+        Message message = new Message("곤니찌와~ ", author.getId(), channel.getId(), null);
 
         message = messageService.createMessage(message);
         System.out.println("===== 메시지 생성 =====");
